@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SEASIDE</title>
+<style>
+  /* 让页面无边距无滚动 */
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* 背景视频 */
+  #videoBackground {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  /* 弹出视频窗口 */
+  #popupContainer {
+    position: absolute;
+    width: 5cm;   /* 宽5cm */
+    height: 4cm;  /* 高4cm */
+    display: none;
+    border: 2px solid #fff;
+    background-color: #000;
+    z-index: 1000;
+    overflow: hidden; /*确保内容不会溢出*/
+  }
+  #popupContainer video {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景视频 -->
+<video id="videoBackground" src="海.mp4" autoplay muted loop></video>
+
+<!-- 弹出视频窗口 -->
+<div id="popupContainer">
+  <video id="videoPopup" src="像素.mp4" controls></video>
+</div>
+
+<script>
+  const bgVideo = document.getElementById('videoBackground');
+  const popup = document.getElementById('popupContainer');
+  const popupVideo = document.getElementById('videoPopup');
+
+  const cmToPx = (cm) => cm * 37.8; // 转换厘米到像素
+
+  // 设置弹窗宽高
+  const widthPx = cmToPx(9.7);
+  const heightPx = cmToPx(5.5);
+  popup.style.width = widthPx + 'px';
+  popup.style.height = heightPx + 'px';
+
+  // 监听屏幕点击事件
+  document.body.addEventListener('click', (e) => {
+    // 不处理点击在视频窗口内的事件
+    if (popup.contains(e.target)) return;
+
+    // 计算弹窗连接位置（确保不超出屏幕）
+    let left = e.clientX;
+    let top = e.clientY;
+
+    // 超出右边界调整
+    if (left + widthPx > window.innerWidth) {
+      left = window.innerWidth - widthPx;
+    }
+    // 超出下边界调整
+    if (top + heightPx > window.innerHeight) {
+      top = window.innerHeight - heightPx;
+    }
+
+    // 设置位置
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+
+    // 显示弹窗
+    popup.style.display = 'block';
+
+    // 播放视频2
+    popupVideo.currentTime = 0;
+    popupVideo.play();
+  });
+
+  // 监听视频播放结束，自动隐藏弹窗
+  popupVideo.addEventListener('ended', () => {
+    popup.style.display = 'none';
+  });
+
+  // 可以添加其他控制逻辑，比如点击关闭
+</script>
+</body>
+</html>
